@@ -34,24 +34,39 @@ db.ref().once('value', function(snapshot) {
   snapshot.forEach(function(childSnapshot) {
     var childKey = childSnapshot.key;
     var childData = childSnapshot.val();
+
     // varibales needed for DOM Manipulation
     var tr = $('<tr>');
     var tdTrainName = $('<td>');
     var tdTrainDestination = $('<td>');
     var tdTrainFrequency = $('<td>');
+
+    // MomentJS Variables for DOM Manipulation
+    var tdNextTrain = $('<td>');
+    var tdMinutesRemaining = $('<td>');
+
     // Train Name Creation
     tdTrainName.attr('class', 'trainName');
     tdTrainName.text(childData.Train_Name);
+
     // Train Destination Creation
     tdTrainDestination.attr('class', 'trainDestination');
     tdTrainDestination.text(childData.Train_Destination);
+
     // Train Frequency Creation
     tdTrainFrequency.attr('class', 'trainFrequency');
     tdTrainFrequency.text(childData.Train_Frequency);
+
+    // Applying the time calculation for the next arriving train.
+    tdNextTrain.attr('class', 'nextTrain');
+    tdNextTrain.text(calculateRemainingTime(childData.Train_Frequency, childData.First_Arrival));
+
     // Appending Everything To A Table Row
     tr.append(tdTrainName);
     tr.append(tdTrainDestination);
     tr.append(tdTrainFrequency);
+    tr.append(tdNextTrain);
+
     // Appending The Table Row To The Table Body. 
     tableBody.append(tr);
   });
@@ -110,7 +125,6 @@ clearBtn.addEventListener('click', function(e) {
 })
 
 // =====================================================================
-
 // Functions
 function clearInputFields() {
   trainName.value = '';
@@ -119,6 +133,35 @@ function clearInputFields() {
   trainFrequency.value = '';
 };
 
+function calculateRemainingTime(trainFrequency, InitialTrainTime) {
+  // How often the train is coming to the station
+  var tFrequency = trainFrequency;
+  // At what time the first train of the day is supposed be at the station.
+  var firstTime = InitialTrainTime;
+  // Reformatting the firstTime Varibale to the proper format.  
+  var firstTimeConverted = moment(firstTime, "HH:mm").subtract(1, 'years');
+  console.log(`First Time After Being Reformated: ${firstTimeConverted}`);
+  // Current Time 
+  var currentTime = moment().format('HH:mm');
+  console.log(`The Current Time: ${currentTime}`);
+  // Calculate the difference in time. In Minutes
+  var diffTime = moment().diff(moment(firstTimeConverted, 'minutes'));
+  console.log(`Difference Between First Time and Current: ${diffTime}`);
+  // Calculating the remainder.
+  var tRemainder = diffTime % tFrequency;
+  console.log(`Remainder: ${tRemainder}`);
+  // Calculating the Minutes Til Train 
+  var tMinutesTilTrain = tFrequency - tRemainder;
+  console.log(`Minutes Til Next Train: ${tMinutesTilTrain}`);
+  // Setting the Next Train Time
+  var nextTrain = moment().add(tMinutesTilTrain, 'minutes');
+  console.log(`Next Train: ${moment(nextTrain).format('hh:mm')}`);
+  var formattedNextTrain = moment(nextTrain).format('hh:mm')
+
+  return formattedNextTrain;
+}
+
+calculateRemainingTime(30, '10:00');
 
 // =====================================================================
 
