@@ -62,8 +62,9 @@ db.ref().once('value', function(snapshot) {
     tdNextTrain.text(calculateNextTrainArrival(childData.Train_Frequency, childData.First_Arrival));
 
     // Applying the Time Calculation For The Minutes Left Until Next Train
+    var timeRemaining = calculateRemainingTimeInMinutes(childData.Train_Frequency, childData.First_Arrival);
     tdMinutesRemaining.attr('class', 'minutesRemaining');
-    tdMinutesRemaining.text(calculateRemainingTimeInMinutes(childData.trainFrequency, childData.First_Arrival));
+    tdMinutesRemaining.text(timeRemaining);
     // Appending Everything To A Table Row
     tr.append(tdTrainName);
     tr.append(tdTrainDestination);
@@ -103,19 +104,39 @@ submitBtn.addEventListener('click', function(e) {
     var tdTrainName = $('<td>');
     var tdTrainDestination = $('<td>');
     var tdTrainFrequency = $('<td>');
+
+     // MomentJS Variables for DOM Manipulation
+     var tdNextTrain = $('<td>');
+     var tdMinutesRemaining = $('<td>');
+
     // Creating the first <td> and specifying the appropriate things. (The class is just for my visuals to know everything is working. It does nothing. )
     tdTrainName.attr('class', 'trainName');
     tdTrainName.text(data.Train_Name);
+
     // Setting the Train Destination TD
     tdTrainDestination.attr('class', 'trainDestination');
     tdTrainDestination.text(data.Train_Destination);
+
     // Setting the Train Frequency TD
     tdTrainFrequency.attr('class', 'trainFrequency');
     tdTrainFrequency.text(data.Train_Frequency);
+
+     // Applying the Time Calculation For The Next Arriving Train.
+     tdNextTrain.attr('class', 'nextTrain');
+     tdNextTrain.text(calculateNextTrainArrival(data.Train_Frequency, data.First_Arrival));
+
+     // Applying the Time Calculation For The Minutes Left Until Next Train
+    var timeRemaining = calculateRemainingTimeInMinutes(data.Train_Frequency, data.First_Arrival);
+    tdMinutesRemaining.attr('class', 'minutesRemaining');
+    tdMinutesRemaining.text(timeRemaining);
+    
     // Appending All of the TD's from up top in order. 
     tr.append(tdTrainName);
     tr.append(tdTrainDestination);
     tr.append(tdTrainFrequency);
+    tr.append(tdNextTrain);
+    tr.append(tdMinutesRemaining);
+
     // Finally appending the TR tag to the body to make sure its visible. 
     tableBody.append(tr);
   })
@@ -143,22 +164,22 @@ function calculateNextTrainArrival(trainFrequency, InitialTrainTime) {
   var firstTime = InitialTrainTime;
   // Reformatting the firstTime Varibale to the proper format.  
   var firstTimeConverted = moment(firstTime, "HH:mm").subtract(1, 'years');
-  console.log(`First Time After Being Reformated: ${firstTimeConverted}`);
+  //console.log(`First Time After Being Reformated: ${firstTimeConverted}`);
   // Current Time 
   var currentTime = moment().format('HH:mm');
-  console.log(`The Current Time: ${currentTime}`);
+  //console.log(`The Current Time: ${currentTime}`);
   // Calculate the difference in time. In Minutes
   var diffTime = moment().diff(moment(firstTimeConverted, 'minutes'));
-  console.log(`Difference Between First Time and Current: ${diffTime}`);
+  //console.log(`Difference Between First Time and Current: ${diffTime}`);
   // Calculating the remainder.
   var tRemainder = diffTime % tFrequency;
-  console.log(`Remainder: ${tRemainder}`);
+  //console.log(`Remainder: ${tRemainder}`);
   // Calculating the Minutes Til Train 
   var tMinutesTilTrain = tFrequency - tRemainder;
-  console.log(`Minutes Til Next Train: ${tMinutesTilTrain}`);
+  //console.log(`Minutes Til Next Train: ${tMinutesTilTrain}`);
   // Setting the Next Train Time
   var nextTrain = moment().add(tMinutesTilTrain, 'minutes');
-  console.log(`Next Train: ${moment(nextTrain).format('hh:mm')}`);
+  //console.log(`Next Train: ${moment(nextTrain).format('hh:mm')}`);
   var formattedNextTrain = moment(nextTrain).format('hh:mm')
 
   return formattedNextTrain;
@@ -187,16 +208,17 @@ function calculateRemainingTimeInMinutes(trainFrequency, InitialTrainTime) {
   var tMinutesTilTrain = tFrequency - tRemainder;
   //console.log(`Minutes Til Next Train: ${tMinutesTilTrain}`);
   // Setting the Next Train Time
-  var nextTrain = moment().add(tMinutesTilTrain, 'minutes');
-  //console.log(`Next Train: ${moment(nextTrain).format('hh:mm')}`);
-  var formattedNextTrain = moment(nextTrain).format('hh:mm');
-
-
-  console.log(typeof tMinutesTilTrain);
   return tMinutesTilTrain;
+  // var nextTrain = moment().add(tMinutesTilTrain, 'minutes');
+  // //console.log(`Next Train: ${moment(nextTrain).format('hh:mm')}`);
+  // var formattedNextTrain = moment(nextTrain).format('hh:mm');
+
+
+  // //console.log(typeof tMinutesTilTrain);
+  // return tMinutesTilTrain;
 }
 
-//calculateRemainingTimeInMinutes(30, '10:00');
+calculateRemainingTimeInMinutes(30, '10:00');
 
 // =====================================================================
 
