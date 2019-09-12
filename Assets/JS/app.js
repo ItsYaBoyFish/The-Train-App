@@ -34,6 +34,7 @@ db.ref().once('value', function(snapshot) {
   snapshot.forEach(function(childSnapshot) {
     var childKey = childSnapshot.key;
     var childData = childSnapshot.val();
+    console.log(childData);
 
     // varibales needed for DOM Manipulation
     var tr = $('<tr>');
@@ -221,4 +222,3 @@ function calculateRemainingTimeInMinutes(trainFrequency, InitialTrainTime) {
 calculateRemainingTimeInMinutes(30, '10:00');
 
 // =====================================================================
-
